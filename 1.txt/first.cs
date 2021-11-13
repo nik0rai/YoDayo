@@ -11,8 +11,8 @@ namespace Task1
 
         public int CompareTo(object obj)
         {
-            if (obj is Animal an)
-            { return this.Age.CompareTo(an.Age); }
+            if (obj is Animal an) 
+                return CompareTo(an);
             else throw new Exception("Невозможно сравнить два объекта");
 
         }
