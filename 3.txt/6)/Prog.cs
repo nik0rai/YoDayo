@@ -21,17 +21,14 @@ namespace ConsoleApp5
             while (true)
             {
                 key = Console.ReadKey(true).Key;
-                if (char.IsDigit((char)key))
-                    Run();
+                if (char.IsDigit((char)key)) Run();
             }
         }
-        public static void AnyKeyPressed()
-        {
-            Run();
-        }
+        public static void AnyKeyPressed() => Run();
+
         private static void Run()
         {
-            using QuedTask quedTask = new QuedTask();
+            using QuedTask quedTask = new();
             for (int i = 0; i < 3; i++) quedTask.Task($"Task {i}");
         }
     }
@@ -39,7 +36,7 @@ namespace ConsoleApp5
     {
         static void Main(string[] args)
         {
-            KeyLogger keyLog = new KeyLogger();
+            KeyLogger keyLog = new();
 
             keyLog.DigitKeyPressed += Subscribers.DigitPressed;
             keyLog.AnyKeyPressed += Subscribers.AnyKeyPressed;
