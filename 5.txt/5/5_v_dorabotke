@@ -1,0 +1,56 @@
+using System;
+using System.IO;
+
+namespace ConsoleApplication5
+{
+    class MyFile : IDisposable
+    {
+        protected FileStream MyFileStream { get; set; }
+        protected StreamWriter MyStream { get; set; }
+        public MyFile(string filePath)
+        {
+            // проверяем существует ли файл
+            if (!File.Exists(filePath))
+                MyFileStream = File.Create(filePath); // создаем файл
+            else
+                MyFileStream = File.Open(filePath, FileMode.Append); // открываем файл
+
+            MyStream = new StreamWriter(MyFileStream);
+        }
+        public void AddTextToFile(string text)
+        {
+            // записываем текст в файл
+            if (MyStream != null)
+                MyStream.Write(text);
+        }
+        public virtual void Dispose()
+        {
+            if (MyStream != null)
+            {
+                MyStream.Dispose();
+                MyStream = null;
+            }
+
+            if (MyFileStream != null)
+            {
+                MyFileStream.Dispose();
+                MyFileStream = null;
+            }
+        }
+        // деструктор класса
+        ~MyFile()
+        {
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            using (MyFile file = new MyFile("D://a.txt"))
+            {
+                file.AddTextToFile("Hello");
+            }
+
+        }
+    }
+}
