@@ -1,33 +1,52 @@
 using System;
-using System.Threading; 
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Threading;
 
-class Program
+namespace ConsoleApp4
 {
-    static void Main()
+    class Program
     {
-        
-        Thread t = new Thread(Time);
-       
-        Thread t2 = new Thread(Time);
+        static List<Thread> threads = new List<Thread>();
+        static int threadCount = 50;
+        static ManualResetEvent startEvent = new ManualResetEvent(false); 
+        static int starterCount = 0;
+        static object LockObject = new object();
 
-        Parallel.Invoke(
-            () => {
-                t.Start();
-            },
-            () => {
-                t2.Start();
+        static void Main(string[] args)
+        {
+            for (int i = 0; i < threadCount; i++)
+            {
+                Thread thread = new Thread(Work);
+                threads.Add(thread);
             }
-        );
-        
+            foreach (var thread in threads)
+            {
+                new Thread(Starting).Start(thread);
+            }
+            while (starterCount < threadCount) Thread.Sleep(1);
 
-        Console.ReadLine();
-    }
-    
-    public static void Time()
-    {
-    
-        Console.WriteLine(DateTime.Now.ToString("hh:mm:ss:fffff"));
+            Thread.Sleep(100);
 
+            startEvent.Set();
+
+            while (true);
+        }
+
+        static void Starting(object paramThread)
+        {
+            lock (LockObject)
+            {
+                starterCount++;
+            }
+            startEvent.WaitOne();
+            (paramThread as Thread).Start();
+        }
+
+        static void Work()
+        {
+            Console.WriteLine("Поток");
+            return;
+        }
     }
 }
+
