@@ -1,67 +1,115 @@
-using System;
-namespace Construct
+
+
+string allforms = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\AllForms.txt";
+
+
+//Triangle------------------------------------------------------------
+int[] TT = { 10, 3, 4 };
+
+try
 {
-    class Triangle
-    {
-        int a;
-        int b;
-        int c;
-        public Triangle(int a, int b, int c)
-        {
-            this.a = a;
-            this.b = b;
-            this.c = c;
-            try
-            {
-                if (a > 0 && b > 0 && c > 0)
-                {
-                    if (a + b <= c || a + c <= b || b + c <= a)
-                        Console.WriteLine("Ошибка! Треугольник не существует. ");
-                }
-                else { throw new ArgumentException("Значение стороны должно быть больше нуля!"); }
-            }
-            catch (ArgumentException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
-    }
+    Triangle t = new Triangle(TT);
+}
+catch (Exception ex)
+{
+    using (StreamWriter sw = new StreamWriter(allforms, true, System.Text.Encoding.Default))
+    { sw.WriteLine(ex.Message); }
+    Console.WriteLine(ex.Message);
+}
 
-    class Quadrangle
+class Triangle
+{
+    int[] param = new int[3];
+    public Triangle(int[] c)
     {
-        int a;
-        int b;
-        int c;
-        int d;
-        public Quadrangle(int a, int b, int c, int d)
+        if (c[0] + c[1] <= c[2] ||
+            c[2] + c[0] <= c[1] ||
+            c[1] + c[2] <= c[0] ||
+            c[0] <= 0 || c[1] <= 0 || c[2] <= 0)
         {
-            this.a = a;
-            this.b = b;
-            this.c = c;
-            this.d = d;
-            try
-            {
-                if (a > 0 && b > 0 && c > 0 && d > 0)
-                {
-                    if (a + b + d <= c || a + b + c <= b || b + c + d <= a || a + b + c <= d)
-                        Console.WriteLine("Ошибка! Четырёхугольник не существует. ");
-                }
-                else { throw new ArgumentException("Значение стороны должно быть больше нуля!"); }
-            }
-            catch (ArgumentException e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            throw new TriangleException(c, $"Triangle was not created:\nTriangle: {c[0]}, {c[1]}, {c[2]}.");
         }
+        param = c;
     }
+}
 
+class TriangleException : GeometryException
+{
+    public TriangleException() { }
+    public TriangleException(string message)
+        : base(message) {  }
+    public TriangleException(int[] c, string message)
+        : base(message) { throw new GeometryException(c, message); }
+}
 
-class Program
+class Quadrangle
+{
+    int[] c = new int[4];
+    public Quadrangle(int[] c)
     {
-        static void Main(string[] args)
+        if (c[0] + c[1] + c[2] <= c[3] ||
+            c[3] + c[0] + c[1] <= c[2] ||
+            c[2] + c[3] + c[0] <= c[1] ||
+            c[1] + c[2] + c[3] <= c[0] ||
+            c[0] <= 0 || c[1] <= 0 || c[2] <= 0 || c[3] <= 0)
         {
-            Triangle tr = new Triangle(3, 4, 5);
-            Console.ReadKey();
+            throw new QuadrangleException(c,  $"Quadrangle was not created:\nQuadrangle: {c[0]}, {c[1]}, {c[2]}, {c[3]}.");
         }
+        this.c = c;
     }
+}
+
+class QuadrangleException : GeometryException
+{
+    public QuadrangleException() { }
+    public QuadrangleException(string message)
+        : base(message) { throw new GeometryException(); }
+    public QuadrangleException(int[] c, string message)
+        : base(message) { throw new GeometryException(c, message); }
+}
+
+class Circle
+{
+    int[] c;
+    public Circle(int[] c)
+    {
+        if (c[0] <= 0)
+        {
+            throw new CircleException(c, $"Circle was not created:\nCircle: {c[0]}.");
+        }
+        this.c = c;
+    }
+}
+
+class CircleException : GeometryException
+{
+    public CircleException() { }
+    
+    public CircleException(string message)
+        : base(message) { throw new GeometryException(); }
+    public CircleException(int[] c, string message)
+        : base(message) { throw new GeometryException(c, message); }
+}
+
+public class GeometryException : Exception
+{
+    private int[] param { get; set; }
+    public GeometryException() { }
+    public GeometryException(string message)
+    : base(message) { }
+    public GeometryException(int[] c, string message) : base(message)
+    {
+        param = c;
+        string allforms = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\AllForms.txt";
+        string except = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\exception.txt";
+
+        if (param.Count() == 4 || param.Count() == 3)
+            using (StreamWriter sw = new StreamWriter(except, true, System.Text.Encoding.Default))
+            { sw.WriteLine(message); }
+
+        using (StreamWriter sw = new StreamWriter(allforms, true, System.Text.Encoding.Default))
+        { sw.WriteLine(message); }
+    }
+    public GeometryException(string message, Exception inner)
+        : base(message, inner) { }
 }
