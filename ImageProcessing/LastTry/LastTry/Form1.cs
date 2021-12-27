@@ -1,4 +1,5 @@
-﻿using DirectShowLib;
+//Change in methods some vals are ref
+using DirectShowLib;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
